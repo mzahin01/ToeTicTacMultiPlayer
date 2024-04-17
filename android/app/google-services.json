@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "145758902443",
+    "project_id": "toe-tic-tac-zahin",
+    "storage_bucket": "toe-tic-tac-zahin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:145758902443:android:eccf3533468c6c8df03fee",
+        "android_client_info": {
+          "package_name": "com.arrijal.ttt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAyjXxpoqsLerCYsGJQFGAA66XhFNSAyk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
