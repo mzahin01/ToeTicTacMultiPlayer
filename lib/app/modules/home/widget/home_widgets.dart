@@ -15,7 +15,7 @@ class RestartButton extends StatelessWidget {
       onPressed: () {
         controller.initializeGame();
       },
-      child: const Text("Restart Game"),
+      child: const Text("Do Restart Game"),
     );
   }
 }
