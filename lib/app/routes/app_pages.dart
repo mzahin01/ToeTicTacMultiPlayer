@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/chess_page/bindings/chess_page_binding.dart';
+import '../modules/chess_page/views/chess_page_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/main_page/bindings/main_page_binding.dart';
@@ -31,6 +33,11 @@ class AppPages {
       name: _Paths.TITLE_PAGE,
       page: () => const TitlePageView(),
       binding: TitlePageBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHESS_PAGE,
+      page: () => const ChessPageView(),
+      binding: ChessPageBinding(),
     ),
   ];
 }

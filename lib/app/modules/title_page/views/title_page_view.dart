@@ -14,18 +14,24 @@ class TitlePageView extends GetView<TitlePageController> {
         title: const Text('Games Lists'),
         centerTitle: true,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-            child: ElevatedButton(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
               onPressed: () {
                 Get.toNamed(Routes.HOME);
               },
               child: const Text('TicTacToe'),
             ),
-          ),
-        ],
+            ElevatedButton(
+              onPressed: () {
+                Get.toNamed(Routes.CHESS_PAGE);
+              },
+              child: const Text('Chess'),
+            ),
+          ],
+        ),
       ),
     );
   }
