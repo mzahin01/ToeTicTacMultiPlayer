@@ -2,6 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ttt/app/modules/home/controllers/home_controller.dart';
 
+class ListMan extends StatelessWidget {
+  const ListMan({
+    super.key,
+    required this.controller,
+  });
+  final HomeController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      return Container(
+        height: 100,
+        color: Colors.amber,
+        child: ListView.builder(
+            itemCount: controller.basketItems.length,
+            itemBuilder: (context, index) {
+              return Container(
+                child: ListTile(
+                  title: Text(controller.basketItems[index].name),
+                  subtitle: Text(controller.basketItems[index].quantity),
+                ),
+              ); // ListTile
+            }),
+      );
+    });
+  }
+}
+
 class RestartButton extends StatelessWidget {
   const RestartButton({
     super.key,

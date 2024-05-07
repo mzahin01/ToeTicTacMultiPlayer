@@ -10,6 +10,7 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -17,6 +18,7 @@ class HomeView extends GetView<HomeController> {
             HeaderText(controller: controller),
             GameContainer(controller: controller),
             RestartButton(controller: controller),
+            ListMan(controller: controller),
           ],
         ),
       ),
