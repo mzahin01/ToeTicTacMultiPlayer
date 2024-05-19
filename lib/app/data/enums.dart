@@ -1,0 +1,1 @@
+enum Games { chess, tictactoe }

@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import '../controllers/chess_page_controller.dart';
+import '../controllers/user_list_controller.dart';
 
-class ChessPageView extends GetView<ChessPageController> {
-  const ChessPageView({super.key});
+class UserListView extends GetView<UserListController> {
+  const UserListView({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ChessPageView'),
+        title: const Text('UserListView'),
         centerTitle: true,
       ),
       body: const Center(
         child: Text(
-          'ChessPageView is working',
+          'UserListView is working',
           style: TextStyle(fontSize: 20),
         ),
       ),

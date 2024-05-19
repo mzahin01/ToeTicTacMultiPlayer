@@ -1,13 +1,9 @@
-// ignore: unused_import
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ttt/app/modules/home/widget/fire_widget.dart';
 
-class HomeController extends GetxController {
-  RxList<Welcome> basketItems = RxList.empty(growable: true);
+class TictactoeOfflineController extends GetxController {
   RxString PLAYER_X = "O".obs;
   RxString PLAYER_Y = "X".obs;
   RxString currentPlayer = RxString('');
@@ -18,33 +14,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     initializeGame();
-    FirebaseFirestore.instance
-        .collection('ticTacToe')
-        .snapshots()
-        .listen((records) {
-      mapRecords(records);
-    });
-    fetchRecord();
     super.onInit();
-  }
-
-  fetchRecord() async {
-    var record = await FirebaseFirestore.instance.collection('ticTacToe').get();
-    mapRecords(record);
-  }
-
-  mapRecords(QuerySnapshot<Map<String, dynamic>> records) {
-    List<Welcome> d = records.docs
-        .map(
-          (item) => Welcome(
-            id: item.id,
-            name: item['name'],
-            quantity: item['quantity'],
-          ),
-        )
-        .toList()
-        .obs;
-    basketItems.value = d;
   }
 
   void initializeGame() {
@@ -52,38 +22,10 @@ class HomeController extends GetxController {
     gameEnd.value = false;
     occupied.clear();
     occupied.addAll(["", "", "", "", "", "", "", "", ""]);
-    work();
-  }
-
-  void updateConcatenatedString() {
-    List<String> replacedList =
-        occupied.map((element) => element.isEmpty ? 'e' : element).toList();
-    concatenatedString.value = replacedList.join();
-    var item = Welcome(
-        id: 'hwKXvs2fNRCVsvYSCFNd',
-        name: "OccupiedIndexes",
-        quantity: concatenatedString.value);
-    FirebaseFirestore.instance
-        .collection("ticTacToe")
-        .doc('hwKXvs2fNRCVsvYSCFNd')
-        .update(item.toJson());
-  }
-
-  work() {
-    concatenatedString.value = 'eeeeeeeee';
-    var item = Welcome(
-        id: 'hwKXvs2fNRCVsvYSCFNd',
-        name: "OccupiedIndexes",
-        quantity: concatenatedString.value);
-    FirebaseFirestore.instance
-        .collection("ticTacToe")
-        .doc('hwKXvs2fNRCVsvYSCFNd')
-        .update(item.toJson());
   }
 
   logic(int index) {
     occupied[index] = currentPlayer.value;
-    updateConcatenatedString();
     _changeTurn();
     _checkwinner();
     _checkForDraw();

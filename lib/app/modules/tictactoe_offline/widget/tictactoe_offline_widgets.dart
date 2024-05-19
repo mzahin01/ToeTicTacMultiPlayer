@@ -1,41 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ttt/app/modules/home/controllers/home_controller.dart';
-
-class ListMan extends StatelessWidget {
-  const ListMan({
-    super.key,
-    required this.controller,
-  });
-  final HomeController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      return Container(
-        height: 100,
-        color: Colors.amber,
-        child: ListView.builder(
-            itemCount: controller.basketItems.length,
-            itemBuilder: (context, index) {
-              return Container(
-                child: ListTile(
-                  title: Text(controller.basketItems[index].name),
-                  subtitle: Text(controller.basketItems[index].quantity),
-                ),
-              ); // ListTile
-            }),
-      );
-    });
-  }
-}
+import 'package:ttt/app/modules/tictactoe_offline/controllers/tictactoe_offline_controller.dart';
 
 class RestartButton extends StatelessWidget {
   const RestartButton({
     super.key,
     required this.controller,
   });
-  final HomeController controller;
+  final TictactoeOfflineController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +26,7 @@ class HeaderText extends StatelessWidget {
     required this.controller,
   });
 
-  final HomeController controller;
+  final TictactoeOfflineController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +61,7 @@ class GameContainer extends StatelessWidget {
     required this.controller,
   });
 
-  final HomeController controller;
+  final TictactoeOfflineController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -116,13 +88,14 @@ class Box extends StatelessWidget {
     required this.index,
   });
 
-  final HomeController controller;
+  final TictactoeOfflineController controller;
   final int index;
 
   @override
   Widget build(BuildContext context) {
     return Obx(
       () => InkWell(
+        hoverColor: Colors.black26,
         onTap: () {
           if (controller.gameEnd.value |
               controller.occupied[index].isNotEmpty) {
@@ -131,6 +104,8 @@ class Box extends StatelessWidget {
           controller.logic(index);
         },
         child: Container(
+          width: Get.width / 4,
+          height: Get.width / 4,
           color: controller.occupied[index].isEmpty
               ? Colors.black26
               : controller.occupied[index] == controller.PLAYER_X.value
