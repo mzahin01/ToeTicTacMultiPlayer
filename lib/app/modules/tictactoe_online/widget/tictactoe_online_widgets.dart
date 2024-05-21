@@ -84,7 +84,9 @@ class HeaderText extends StatelessWidget {
         ),
         Obx(
           () => Text(
-            "${controller.gameData.value?.currentPlayer}'s Turn", // Display the current player's turn
+            controller.gameData.value?.gameEnd == true
+                ? controller.finalMessage.value
+                : "${controller.gameData.value?.currentPlayer}'s Turn",
             style: const TextStyle(
               color: Colors.black87,
               fontSize: 32,

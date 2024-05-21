@@ -9,6 +9,7 @@ class TictactoeOnlineController extends GetxController {
   String opponent_name = '';
   RxString concatenatedUids = RxString('');
   Rx<GameData?> gameData = Rx(null);
+  RxString finalMessage = ''.obs;
 
   @override
   Future<void> onInit() async {
@@ -168,6 +169,7 @@ class TictactoeOnlineController extends GetxController {
   }
 
   showGameOverMessage(String message) {
+    finalMessage.value = message;
     Get.snackbar(
       "Game Over",
       message,
