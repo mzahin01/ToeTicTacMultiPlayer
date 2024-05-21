@@ -19,7 +19,7 @@ class MainPageView extends GetView<MainPageController> {
               )
             : null,
         appBar: AppBar(
-          title: const Text('MainPageView'),
+          title: const Text('Hello'),
           centerTitle: true,
         ),
         body: Center(
@@ -45,12 +45,15 @@ class MainPageView extends GetView<MainPageController> {
                             children: [
                               ElevatedButton(
                                 onPressed: () {
-                                  Get.toNamed(Routes.USER_LIST);
+                                  Get.back();
+                                  Get.toNamed(Routes.USER_LIST,
+                                      arguments: controller.username.value);
                                 },
                                 child: const Text('Online'),
                               ),
                               ElevatedButton(
                                 onPressed: () {
+                                  Get.back();
                                   Get.toNamed(Routes.TICTACTOE_OFFLINE);
                                 },
                                 child: const Text('Offline'),
@@ -82,12 +85,14 @@ class MainPageView extends GetView<MainPageController> {
                             children: [
                               ElevatedButton(
                                 onPressed: () {
-                                  Get.toNamed(Routes.CHESS_PAGE);
+                                  Get.back();
+                                  Get.toNamed(Routes.USER_LIST);
                                 },
                                 child: const Text('Online'),
                               ),
                               ElevatedButton(
                                 onPressed: () {
+                                  Get.back();
                                   Get.toNamed(Routes.CHESS_PAGE);
                                 },
                                 child: const Text('Offline'),

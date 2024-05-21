@@ -18,14 +18,13 @@ class TictactoeOnlineView extends GetView<TictactoeOnlineController> {
             children: [
               HeaderText(controller: controller),
               GameContainer(controller: controller),
-              Obx(() => Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      RestartButton(controller: controller),
-                      if (controller.occupied.isNotEmpty)
-                        FirstPlayerButton(controller: controller),
-                    ],
-                  )),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  RestartButton(controller: controller),
+                  FirstPlayerButton(controller: controller),
+                ],
+              ),
             ],
           ),
         ),

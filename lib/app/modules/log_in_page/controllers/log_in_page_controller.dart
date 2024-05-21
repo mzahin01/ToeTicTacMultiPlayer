@@ -5,18 +5,28 @@ import 'package:ttt/app/routes/app_pages.dart';
 
 class LogInPageController extends GetxController {
   TextEditingController emailController =
-      TextEditingController(text: 'hello@hello.com');
+      TextEditingController(text: 'azraeel@gmail.com');
   TextEditingController passController =
-      TextEditingController(text: 'hellohello');
+      TextEditingController(text: 'openopen');
 
-  void login() {
-    FirebaseAuth.instance
-        .signInWithEmailAndPassword(
-          email: emailController.text,
-          password: passController.text,
-        )
-        .then(
-          (UserCredential cred) => Get.offAllNamed(Routes.MAIN_PAGE),
-        );
+  void login() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passController.text,
+      );
+      Get.offAllNamed(Routes.MAIN_PAGE);
+      Get.snackbar('Contugralations!', 'Wellcome');
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        Get.snackbar('WEAK!', 'Password Provided is too weak');
+      } else if (e.code == 'email-already-in-use') {
+        Get.snackbar('REPEAT!', 'Email Provided already Exists');
+      } else if (e.code == 'invalid-credential') {
+        Get.snackbar('WRONG!', 'Email and Password does not match');
+      }
+    } catch (e) {
+      Get.snackbar('WEAK!', e.toString());
+    }
   }
 }

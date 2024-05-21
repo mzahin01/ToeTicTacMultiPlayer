@@ -1,98 +1,133 @@
-// ignore_for_file: non_constant_identifier_names
-
+// ignore_for_file: non_constant_identifier_names, avoid_print
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ttt/app/modules/tictactoe_online/widget/fire_widget.dart';
+import 'package:ttt/app/modules/tictactoe_online/model/game_data.dart';
 
 class TictactoeOnlineController extends GetxController {
-  RxList<Welcome> basketItems = RxList.empty(growable: true);
-  RxString PLAYER_X = "O".obs;
-  RxString PLAYER_Y = "X".obs;
-  RxString currentPlayer = RxString('');
-  RxBool gameEnd = RxBool(false);
-  RxBool myturn = RxBool(false);
-  RxList<String> occupied = RxList.empty(growable: true);
-  RxString concatenatedString = "".obs;
+  String my_name = '';
+  String opponent_name = '';
+  RxString concatenatedUids = RxString('');
+  Rx<GameData?> gameData = Rx(null);
 
   @override
-  void onInit() {
-    initializeGame();
+  Future<void> onInit() async {
+    String? opponentUid = Get.parameters['opponent'];
+    String? uid = Get.parameters['mine'];
+    await fetchPlayersNames(uidMine: uid, uidOpp: opponentUid);
+    concatenatedUids.value = concatenateUids(uid!, opponentUid!);
+    await startfire(uid, opponentUid, concatenatedUids.value);
     FirebaseFirestore.instance
         .collection('ticTacToe')
-        .doc('JEltafvog74tZle6wAWc')
+        .doc(concatenatedUids.value)
         .snapshots()
-        .listen(listenFunction);
+        .listen(parseGameData);
     super.onInit();
   }
 
-  void listenFunction(DocumentSnapshot<Map<String, dynamic>> doc) {
-    if (doc.exists) {
-      // Extract data from the document
-      List<dynamic> data = doc.data()!['indexes'];
-      // Update local state or perform other actions based on the document data
-      occupied.value = List<String>.from(data);
-      if (occupied.isEmpty) {
-        initializeGame();
+  Future<void> fetchPlayersNames({String? uidMine, String? uidOpp}) async {
+    DocumentSnapshot<Map<String, dynamic>> data1 =
+        await FirebaseFirestore.instance.collection('users').doc(uidMine).get();
+    my_name = data1.data()?["name"];
+    DocumentSnapshot<Map<String, dynamic>> data2 =
+        await FirebaseFirestore.instance.collection('users').doc(uidOpp).get();
+    opponent_name = data2.data()?["name"];
+  }
+
+  String concatenateUids(String uidOpponent, String uidMine) {
+    if (uidOpponent.compareTo(uidMine) <= 0) {
+      return uidOpponent + uidMine;
+    } else {
+      return uidMine + uidOpponent;
+    }
+  }
+
+  Future<void> startfire(
+    String uidOpponent,
+    String uidMine,
+    String concatenatedUids,
+  ) async {
+    DocumentReference gameRef = FirebaseFirestore.instance
+        .collection('ticTacToe')
+        .doc(concatenatedUids);
+    try {
+      DocumentSnapshot doc = await gameRef.get();
+      if (!doc.exists) {
+        await initializeGame(uidMine, uidOpponent);
+      } else {
+        parseGameData(doc as DocumentSnapshot<Map<String, dynamic>>);
       }
-      // print(occupied);
+    } catch (e) {
+      print('Error fetching/creating game document: $e');
+    }
+  }
+
+  void parseGameData(DocumentSnapshot<Map<String, dynamic>> doc) {
+    if (doc.exists) {
+      Map<String, dynamic>? data = doc.data();
+      gameData.value = GameData.fromJson(data ?? {});
       gameroutine();
     }
   }
 
-  void initializeGame() {
-    currentPlayer.value = PLAYER_X.value;
-    gameEnd.value = false;
-    myturn.value = false;
-    occupied.clear();
-    occupied.addAll(["", "", "", "", "", "", "", "", ""]);
-    work();
-  }
+  Future<void> initializeGame(String uidMine, String uidOppo) async {
+    gameData.value = GameData(
+      currentPlayer: 'Nobody',
+      moves: List.filled(9, ''),
+      player1: uidMine.compareTo(uidOppo) <= 0 ? my_name : opponent_name,
+      player2: uidMine.compareTo(uidOppo) <= 0 ? opponent_name : my_name,
+      player1Uid: uidMine.compareTo(uidOppo) <= 0 ? uidMine : uidOppo,
+      player2Uid: uidMine.compareTo(uidOppo) <= 0 ? uidOppo : uidMine,
+      gameEnd: false,
+      gameStart: false,
+      startPlayer: null,
+    );
 
-  work() {
-    List<String> emptyList = List.filled(9, '');
-    FirebaseFirestore.instance
-        .collection("ticTacToe")
-        .doc('JEltafvog74tZle6wAWc')
-        .update({'indexes': emptyList});
-  }
-
-  void updateOccupiedIndex(int index, String value) {
-    occupied[index] = value;
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('ticTacToe')
-        .doc('JEltafvog74tZle6wAWc')
-        .update({'indexes': occupied});
+        .doc(concatenatedUids.value)
+        .set(
+          gameData.value?.toJson() ?? {},
+        );
   }
 
-  logic(int index) {
-    occupied[index] = currentPlayer.value;
-    updateOccupiedIndex(index, currentPlayer.value);
-    // _onlineTurn();
+  Future<void> gameStart() async {
+    gameData.value?.startPlayer = my_name;
+    gameData.value?.currentPlayer = my_name;
+    gameData.value?.gameStart = true;
+    await FirebaseFirestore.instance
+        .collection('ticTacToe')
+        .doc(concatenatedUids.value)
+        .set(
+          gameData.value?.toJson() ?? {},
+        );
+  }
+
+  void updateOccupiedIndex(int index) async {
+    gameData.value?.moves?[index] =
+        (my_name == (gameData.value?.startPlayer ?? '')) ? 'O' : 'X';
+    gameData.value?.currentPlayer = opponent_name;
+    try {
+      DocumentReference gameRef = FirebaseFirestore.instance
+          .collection('ticTacToe')
+          .doc(concatenatedUids.value);
+      gameRef.set(gameData.value?.toJson() ?? {});
+    } catch (e) {
+      print('Error updating moves field: $e');
+    }
   }
 
   void gameroutine() {
-    _changeTurn();
     _checkwinner();
     _checkForDraw();
-    onlineTurn();
-  }
-
-  onlineTurn() {
-    if (myturn.value == true) {
-      myturn.value = false;
-    } else {
-      myturn.value = true;
-    }
-    // print(myturn);
   }
 
   _checkForDraw() {
-    if (gameEnd.value) {
+    if (gameData.value?.gameEnd ?? false) {
       return;
     }
     bool draw = true;
-    for (var i in occupied) {
+    for (var i in gameData.value?.moves ?? []) {
       if (i.isEmpty) {
         draw = false;
       }
@@ -100,15 +135,7 @@ class TictactoeOnlineController extends GetxController {
 
     if (draw) {
       showGameOverMessage("Draw");
-      gameEnd.value = true;
-    }
-  }
-
-  _changeTurn() {
-    if (currentPlayer.value == PLAYER_X.value) {
-      currentPlayer.value = PLAYER_Y.value;
-    } else {
-      currentPlayer.value = PLAYER_X.value;
+      gameData.value?.gameEnd = true;
     }
   }
 
@@ -125,15 +152,15 @@ class TictactoeOnlineController extends GetxController {
     ];
 
     for (var winningPos in winningList) {
-      String playerPosition0 = occupied[winningPos[0]];
-      String playerPosition1 = occupied[winningPos[1]];
-      String playerPosition2 = occupied[winningPos[2]];
+      String playerPosition0 = gameData.value?.moves?[winningPos[0]] ?? '';
+      String playerPosition1 = gameData.value?.moves?[winningPos[1]] ?? '';
+      String playerPosition2 = gameData.value?.moves?[winningPos[2]] ?? '';
 
       if (playerPosition0.isNotEmpty) {
         if (playerPosition0 == playerPosition1 &&
             playerPosition0 == playerPosition2) {
-          showGameOverMessage("$currentPlayer won");
-          gameEnd = true.obs;
+          showGameOverMessage("${gameData.value?.currentPlayer} won");
+          gameData.value?.gameEnd = true;
           return;
         }
       }

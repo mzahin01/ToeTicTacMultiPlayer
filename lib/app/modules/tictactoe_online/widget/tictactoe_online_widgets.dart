@@ -11,18 +11,33 @@ class FirstPlayerButton extends StatelessWidget {
   final TictactoeOnlineController controller;
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
-      ),
-      onPressed: () {
-        controller.onlineTurn();
-      },
-      child: const Text(
-        "Play",
-        style: TextStyle(color: Colors.white),
-      ),
-    );
+    return Obx(() {
+      return ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all<Color>(
+              controller.gameData.value?.currentPlayer == 'Nobody'
+                  ? Colors.white
+                  : Colors.black),
+        ),
+        onPressed: () {
+          if (controller.gameData.value?.currentPlayer == 'Nobody') {
+            controller.gameStart();
+            // controller.onlineTurn();
+          } else {
+            return;
+          }
+        },
+        child: Text(
+          controller.gameData.value?.currentPlayer == 'Nobody'
+              ? "Play"
+              : "Started",
+          style: TextStyle(
+              color: controller.gameData.value?.currentPlayer == 'Nobody'
+                  ? Colors.black
+                  : Colors.white),
+        ),
+      );
+    });
   }
 }
 
@@ -37,7 +52,10 @@ class RestartButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        controller.initializeGame();
+        controller.initializeGame(
+          controller.gameData.value?.player1Uid ?? '',
+          controller.gameData.value?.player2Uid ?? '',
+        );
       },
       child: const Text("Do Restart Game"),
     );
@@ -66,7 +84,7 @@ class HeaderText extends StatelessWidget {
         ),
         Obx(
           () => Text(
-            "${controller.currentPlayer.value}'s Turn", // Display the current player's turn
+            "${controller.gameData.value?.currentPlayer}'s Turn", // Display the current player's turn
             style: const TextStyle(
               color: Colors.black87,
               fontSize: 32,
@@ -121,27 +139,28 @@ class Box extends StatelessWidget {
       () => InkWell(
         hoverColor: Colors.black26,
         onTap: () {
-          if (controller.gameEnd.value |
-              controller.occupied[index].isNotEmpty |
-              !controller.myturn.value) {
+          if ((controller.gameData.value?.gameEnd ?? false) |
+              (controller.gameData.value?.moves?[index].isNotEmpty ?? false) |
+              (controller.gameData.value?.currentPlayer == 'Nobody') |
+              (controller.gameData.value?.currentPlayer !=
+                  controller.my_name)) {
             return;
           }
-          // controller.onlineTurn();
-          controller.logic(index);
+          controller.updateOccupiedIndex(index);
         },
         child: Container(
           width: Get.width / 4,
           height: Get.width / 4,
-          color: controller.occupied[index].isEmpty
+          color: (controller.gameData.value?.moves?[index].isEmpty ?? false)
               ? Colors.black26
-              : controller.occupied[index] == controller.PLAYER_X.value
+              : (controller.gameData.value?.moves?[index] ?? '') == 'O'
                   ? Colors.red
                   : Colors.amber,
           margin: const EdgeInsets.all(8.0),
           child: Center(
               child: Text(
-            controller.occupied[index],
-            style: const TextStyle(fontSize: 50),
+            controller.gameData.value?.moves?[index] ?? '',
+            style: const TextStyle(fontSize: 70),
           )),
         ),
       ),
