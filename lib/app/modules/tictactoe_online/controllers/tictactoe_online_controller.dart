@@ -1,15 +1,14 @@
-// ignore_for_file: non_constant_identifier_names, avoid_print
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ttt/app/modules/tictactoe_online/model/game_data.dart';
 
 class TictactoeOnlineController extends GetxController {
-  String my_name = '';
-  String opponent_name = '';
+  String myName = '';
+  String opponentName = '';
   RxString concatenatedUids = RxString('');
   Rx<GameData?> gameData = Rx(null);
-  RxString finalMessage = ''.obs;
+  // RxString finalMessage = ''.obs;
 
   @override
   Future<void> onInit() async {
@@ -29,10 +28,10 @@ class TictactoeOnlineController extends GetxController {
   Future<void> fetchPlayersNames({String? uidMine, String? uidOpp}) async {
     DocumentSnapshot<Map<String, dynamic>> data1 =
         await FirebaseFirestore.instance.collection('users').doc(uidMine).get();
-    my_name = data1.data()?["name"];
+    myName = data1.data()?["name"];
     DocumentSnapshot<Map<String, dynamic>> data2 =
         await FirebaseFirestore.instance.collection('users').doc(uidOpp).get();
-    opponent_name = data2.data()?["name"];
+    opponentName = data2.data()?["name"];
   }
 
   String concatenateUids(String uidOpponent, String uidMine) {
@@ -75,13 +74,14 @@ class TictactoeOnlineController extends GetxController {
     gameData.value = GameData(
       currentPlayer: 'Nobody',
       moves: List.filled(9, ''),
-      player1: uidMine.compareTo(uidOppo) <= 0 ? my_name : opponent_name,
-      player2: uidMine.compareTo(uidOppo) <= 0 ? opponent_name : my_name,
+      player1: uidMine.compareTo(uidOppo) <= 0 ? myName : opponentName,
+      player2: uidMine.compareTo(uidOppo) <= 0 ? opponentName : myName,
       player1Uid: uidMine.compareTo(uidOppo) <= 0 ? uidMine : uidOppo,
       player2Uid: uidMine.compareTo(uidOppo) <= 0 ? uidOppo : uidMine,
       gameEnd: false,
       gameStart: false,
       startPlayer: null,
+      gameEndMassage: "",
     );
 
     await FirebaseFirestore.instance
@@ -93,8 +93,8 @@ class TictactoeOnlineController extends GetxController {
   }
 
   Future<void> gameStart() async {
-    gameData.value?.startPlayer = my_name;
-    gameData.value?.currentPlayer = my_name;
+    gameData.value?.startPlayer = myName;
+    gameData.value?.currentPlayer = myName;
     gameData.value?.gameStart = true;
     await FirebaseFirestore.instance
         .collection('ticTacToe')
@@ -106,8 +106,8 @@ class TictactoeOnlineController extends GetxController {
 
   void updateOccupiedIndex(int index) async {
     gameData.value?.moves?[index] =
-        (my_name == (gameData.value?.startPlayer ?? '')) ? 'O' : 'X';
-    gameData.value?.currentPlayer = opponent_name;
+        (myName == (gameData.value?.startPlayer ?? '')) ? 'O' : 'X';
+    gameData.value?.currentPlayer = opponentName;
     try {
       DocumentReference gameRef = FirebaseFirestore.instance
           .collection('ticTacToe')
@@ -135,8 +135,9 @@ class TictactoeOnlineController extends GetxController {
     }
 
     if (draw) {
-      showGameOverMessage("Draw");
+      gameData.value?.gameEndMassage = "Drawn";
       gameData.value?.gameEnd = true;
+      showGameOverMessage();
     }
   }
 
@@ -160,19 +161,21 @@ class TictactoeOnlineController extends GetxController {
       if (playerPosition0.isNotEmpty) {
         if (playerPosition0 == playerPosition1 &&
             playerPosition0 == playerPosition2) {
-          showGameOverMessage("${gameData.value?.currentPlayer} won");
+          // showGameOverMessage("${gameData.value?.currentPlayer} won");
           gameData.value?.gameEnd = true;
+          gameData.value?.gameEndMassage =
+              "${gameData.value?.currentPlayer} won";
+          showGameOverMessage();
           return;
         }
       }
     }
   }
 
-  showGameOverMessage(String message) {
-    finalMessage.value = message;
+  showGameOverMessage() {
     Get.snackbar(
       "Game Over",
-      message,
+      gameData.value?.gameEndMassage ?? "",
       duration: const Duration(seconds: 3),
       backgroundColor: Colors.blue,
       colorText: Colors.white,

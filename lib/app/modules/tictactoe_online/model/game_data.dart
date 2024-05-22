@@ -10,6 +10,7 @@ class GameData {
   bool? gameEnd;
   bool? gameStart;
   String? startPlayer;
+  String? gameEndMassage;
 
   GameData({
     this.moves,
@@ -21,6 +22,7 @@ class GameData {
     this.gameEnd,
     this.gameStart,
     this.startPlayer,
+    this.gameEndMassage,
   });
 
   factory GameData.fromRawJson(String str) =>
@@ -40,6 +42,7 @@ class GameData {
         gameEnd: json["game_end"],
         gameStart: json["game_start"],
         startPlayer: json["start_player"],
+        gameEndMassage: json["game_end_massage"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -52,5 +55,6 @@ class GameData {
         "game_end": gameEnd,
         "game_start": gameStart,
         "start_player": startPlayer,
+        "game_end_massage": gameEndMassage,
       };
 }

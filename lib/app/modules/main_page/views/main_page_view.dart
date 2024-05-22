@@ -67,45 +67,6 @@ class MainPageView extends GetView<MainPageController> {
                 },
                 child: const Text('toeTicTac'),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Get.bottomSheet(
-                    ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(20.0),
-                        topRight: Radius.circular(20.0),
-                      ),
-                      child: Container(
-                        color: Colors.lightBlueAccent,
-                        height: Get.height / 6,
-                        width: Get.width,
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  Get.back();
-                                  Get.toNamed(Routes.USER_LIST);
-                                },
-                                child: const Text('Online'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  Get.back();
-                                  Get.toNamed(Routes.CHESS_PAGE);
-                                },
-                                child: const Text('Offline'),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-                child: const Text('Chess'),
-              ),
               const SizedBox(
                 height: 200,
               ),
@@ -123,7 +84,12 @@ class MainPageView extends GetView<MainPageController> {
                   child: const Text('Register Now'),
                 ),
               ] else
-                Text('Hello, ${controller.username.value ?? 'No name found'}'),
+                Text(
+                  'Salam,\n ${controller.username.value ?? 'No name found'}',
+                  style: const TextStyle(
+                    fontSize: 25,
+                  ),
+                ),
             ],
           ),
         ),

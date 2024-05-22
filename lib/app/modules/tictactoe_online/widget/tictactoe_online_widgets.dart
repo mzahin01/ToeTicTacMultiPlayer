@@ -22,7 +22,6 @@ class FirstPlayerButton extends StatelessWidget {
         onPressed: () {
           if (controller.gameData.value?.currentPlayer == 'Nobody') {
             controller.gameStart();
-            // controller.onlineTurn();
           } else {
             return;
           }
@@ -52,12 +51,57 @@ class RestartButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        controller.initializeGame(
-          controller.gameData.value?.player1Uid ?? '',
-          controller.gameData.value?.player2Uid ?? '',
-        );
+        if (controller.gameData.value?.gameEnd == false &&
+            controller.gameData.value?.gameStart == true) {
+          Get.bottomSheet(
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20.0),
+                topRight: Radius.circular(20.0),
+              ),
+              child: Container(
+                color: Colors.white,
+                height: Get.height / 5,
+                width: Get.width,
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          Get.back();
+                          controller.gameData.value?.gameEnd = true;
+                          controller.gameData.value?.gameEndMassage =
+                              '${controller.myName} Surrendered';
+                          print(controller.gameData.value?.gameEndMassage);
+                          await Future.delayed(Duration(seconds: 5));
+                          controller.initializeGame(
+                            controller.gameData.value?.player1Uid ?? '',
+                            controller.gameData.value?.player2Uid ?? '',
+                          );
+                        },
+                        child: const Text('Yes, I surrender!'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        child: const Text("No! I'll fight"),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        } else {
+          controller.initializeGame(
+            controller.gameData.value?.player1Uid ?? '',
+            controller.gameData.value?.player2Uid ?? '',
+          );
+        }
       },
-      child: const Text("Do Restart Game"),
+      child: const Text("Restart Game"),
     );
   }
 }
@@ -85,7 +129,7 @@ class HeaderText extends StatelessWidget {
         Obx(
           () => Text(
             controller.gameData.value?.gameEnd == true
-                ? controller.finalMessage.value
+                ? controller.gameData.value?.gameEndMassage ?? ""
                 : "${controller.gameData.value?.currentPlayer}'s Turn",
             style: const TextStyle(
               color: Colors.black87,
@@ -144,8 +188,7 @@ class Box extends StatelessWidget {
           if ((controller.gameData.value?.gameEnd ?? false) |
               (controller.gameData.value?.moves?[index].isNotEmpty ?? false) |
               (controller.gameData.value?.currentPlayer == 'Nobody') |
-              (controller.gameData.value?.currentPlayer !=
-                  controller.my_name)) {
+              (controller.gameData.value?.currentPlayer != controller.myName)) {
             return;
           }
           controller.updateOccupiedIndex(index);
