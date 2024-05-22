@@ -37,14 +37,24 @@ class UserListView extends GetView<UserListController> {
             return GestureDetector(
               child: Container(
                 margin: const EdgeInsets.all(5),
-                color: const Color.fromARGB(255, 118, 208, 249),
                 width: Get.width,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 118, 208, 249),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 child: ListTile(
-                  title: Text(user.name ?? '--'),
+                  title: Text(
+                    user.name ?? '--',
+                    style: const TextStyle(
+                        fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
                   subtitle: Text(user.email ?? '--'),
                   trailing: Container(
-                    color: Colors.white,
                     padding: const EdgeInsets.all(4.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
                     child: Text(
                       (user.played ?? 0) <= 10
                           ? 'NewBie'
