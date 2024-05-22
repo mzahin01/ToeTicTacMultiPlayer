@@ -73,8 +73,11 @@ class RestartButton extends StatelessWidget {
                           controller.gameData.value?.gameEnd = true;
                           controller.gameData.value?.gameEndMassage =
                               '${controller.myName} Surrendered';
+                          controller.gamEndSet();
                           print(controller.gameData.value?.gameEndMassage);
-                          await Future.delayed(Duration(seconds: 5));
+                          await Future.delayed(
+                            const Duration(seconds: 4),
+                          );
                           controller.initializeGame(
                             controller.gameData.value?.player1Uid ?? '',
                             controller.gameData.value?.player2Uid ?? '',
@@ -127,16 +130,19 @@ class HeaderText extends StatelessWidget {
           ),
         ),
         Obx(
-          () => Text(
-            controller.gameData.value?.gameEnd == true
-                ? controller.gameData.value?.gameEndMassage ?? ""
-                : "${controller.gameData.value?.currentPlayer}'s Turn",
-            style: const TextStyle(
-              color: Colors.black87,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          () {
+            print(controller.gameData.value?.gameEndMassage);
+            return Text(
+              controller.gameData.value?.gameEnd == true
+                  ? controller.gameData.value?.gameEndMassage ?? ""
+                  : "${controller.gameData.value?.currentPlayer}'s Turn",
+              style: const TextStyle(
+                color: Colors.black87,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+          },
         ),
       ],
     );

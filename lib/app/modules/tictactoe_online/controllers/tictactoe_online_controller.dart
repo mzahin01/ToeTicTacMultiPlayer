@@ -62,7 +62,7 @@ class TictactoeOnlineController extends GetxController {
     }
   }
 
-  void parseGameData(DocumentSnapshot<Map<String, dynamic>> doc) {
+  Future<void> parseGameData(DocumentSnapshot<Map<String, dynamic>> doc) async {
     if (doc.exists) {
       Map<String, dynamic>? data = doc.data();
       gameData.value = GameData.fromJson(data ?? {});
@@ -119,8 +119,12 @@ class TictactoeOnlineController extends GetxController {
   }
 
   void gameroutine() {
-    _checkwinner();
-    _checkForDraw();
+    if (gameData.value?.gameEnd == true) {
+      showGameOverMessage();
+    } else {
+      _checkwinner();
+      _checkForDraw();
+    }
   }
 
   _checkForDraw() {
@@ -137,7 +141,8 @@ class TictactoeOnlineController extends GetxController {
     if (draw) {
       gameData.value?.gameEndMassage = "Drawn";
       gameData.value?.gameEnd = true;
-      showGameOverMessage();
+      gamEndSet();
+      // showGameOverMessage();
     }
   }
 
@@ -165,11 +170,21 @@ class TictactoeOnlineController extends GetxController {
           gameData.value?.gameEnd = true;
           gameData.value?.gameEndMassage =
               "${gameData.value?.currentPlayer} won";
-          showGameOverMessage();
+          gamEndSet();
+          // showGameOverMessage();
           return;
         }
       }
     }
+  }
+
+  Future<void> gamEndSet() async {
+    await FirebaseFirestore.instance
+        .collection('ticTacToe')
+        .doc(concatenatedUids.value)
+        .set(
+          gameData.value?.toJson() ?? {},
+        );
   }
 
   showGameOverMessage() {
