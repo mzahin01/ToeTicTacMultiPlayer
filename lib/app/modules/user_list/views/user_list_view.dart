@@ -56,7 +56,7 @@ class UserListView extends GetView<UserListController> {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     child: Text(
-                      (user.played ?? 0) <= 10
+                      (user.played ?? 0) <= 5
                           ? 'NewBie'
                           : user.played == 0
                               ? '${user.won.toString()}%'
