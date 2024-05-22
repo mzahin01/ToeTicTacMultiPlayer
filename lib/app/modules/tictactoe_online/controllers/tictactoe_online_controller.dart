@@ -28,6 +28,16 @@ class TictactoeOnlineController extends GetxController {
         .doc(concatenatedUids.value)
         .snapshots()
         .listen(parseGameData);
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(myUid)
+        .snapshots()
+        .listen(parseUser1Data);
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(oppoUid)
+        .snapshots()
+        .listen(parseUser2Data);
     super.onInit();
   }
 
@@ -74,6 +84,22 @@ class TictactoeOnlineController extends GetxController {
       }
     } catch (e) {
       print('Error fetching/creating game document: $e');
+    }
+  }
+
+  Future<void> parseUser1Data(
+      DocumentSnapshot<Map<String, dynamic>> doc) async {
+    if (doc.exists) {
+      Map<String, dynamic>? data = doc.data();
+      updater.value = UserClass.fromJson(data ?? {});
+    }
+  }
+
+  Future<void> parseUser2Data(
+      DocumentSnapshot<Map<String, dynamic>> doc) async {
+    if (doc.exists) {
+      Map<String, dynamic>? data = doc.data();
+      oppUpdater.value = UserClass.fromJson(data ?? {});
     }
   }
 
@@ -224,7 +250,12 @@ class TictactoeOnlineController extends GetxController {
     }
   }
 
-  showGameOverMessage() {
+  bool _isCooldown = false;
+
+  void showGameOverMessage() {
+    if (_isCooldown) {
+      return;
+    }
     Get.snackbar(
       "Game Over",
       gameData.value?.gameEndMassage ?? "",
@@ -236,5 +267,13 @@ class TictactoeOnlineController extends GetxController {
       padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.all(30),
     );
+    _startCooldown();
+  }
+
+  void _startCooldown() {
+    _isCooldown = true;
+    Future.delayed(const Duration(seconds: 5), () {
+      _isCooldown = false;
+    });
   }
 }
