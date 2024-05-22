@@ -11,6 +11,7 @@ class GameData {
   bool? gameStart;
   String? startPlayer;
   String? gameEndMassage;
+  String? winner;
 
   GameData({
     this.moves,
@@ -23,6 +24,7 @@ class GameData {
     this.gameStart,
     this.startPlayer,
     this.gameEndMassage,
+    this.winner,
   });
 
   factory GameData.fromRawJson(String str) =>
@@ -43,6 +45,7 @@ class GameData {
         gameStart: json["game_start"],
         startPlayer: json["start_player"],
         gameEndMassage: json["game_end_massage"],
+        winner: json["winner"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -56,5 +59,39 @@ class GameData {
         "game_start": gameStart,
         "start_player": startPlayer,
         "game_end_massage": gameEndMassage,
+        "winner": winner,
+      };
+}
+
+class UserClass {
+  String? email;
+  String? name;
+  int? played;
+  int? won;
+
+  UserClass({
+    this.email,
+    this.name,
+    this.played,
+    this.won,
+  });
+
+  factory UserClass.fromRawJson(String str) =>
+      UserClass.fromJson(json.decode(str));
+
+  String toRawJson() => json.encode(toJson());
+
+  factory UserClass.fromJson(Map<String, dynamic> json) => UserClass(
+        email: json["email"],
+        name: json["name"],
+        played: json["played"],
+        won: json["won"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "email": email,
+        "name": name,
+        "played": played,
+        "won": won,
       };
 }

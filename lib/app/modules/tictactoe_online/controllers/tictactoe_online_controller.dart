@@ -5,24 +5,39 @@ import 'package:ttt/app/modules/tictactoe_online/model/game_data.dart';
 
 class TictactoeOnlineController extends GetxController {
   String myName = '';
+  String? myUid = '';
+
+  String? oppoUid = '';
   String opponentName = '';
   RxString concatenatedUids = RxString('');
   Rx<GameData?> gameData = Rx(null);
-  // RxString finalMessage = ''.obs;
+  Rx<UserClass?> updater = Rx(null);
+  Rx<UserClass?> oppUpdater = Rx(null);
 
   @override
   Future<void> onInit() async {
-    String? opponentUid = Get.parameters['opponent'];
-    String? uid = Get.parameters['mine'];
-    await fetchPlayersNames(uidMine: uid, uidOpp: opponentUid);
-    concatenatedUids.value = concatenateUids(uid!, opponentUid!);
-    await startfire(uid, opponentUid, concatenatedUids.value);
+    oppoUid = Get.parameters['opponent'];
+    myUid = Get.parameters['mine'];
+    await fetchPlayersNames(uidMine: myUid, uidOpp: oppoUid);
+    concatenatedUids.value = concatenateUids(myUid ?? '', oppoUid!);
+    await startfire(myUid ?? '', oppoUid ?? '', concatenatedUids.value);
+    updater.value = await myDocuments(myUid ?? '');
+    oppUpdater.value = await myDocuments(oppoUid ?? '');
     FirebaseFirestore.instance
         .collection('ticTacToe')
         .doc(concatenatedUids.value)
         .snapshots()
         .listen(parseGameData);
     super.onInit();
+  }
+
+  Future<UserClass> myDocuments(String uid) async {
+    Map<String, dynamic>? data =
+        (await FirebaseFirestore.instance.collection('users').doc(uid).get())
+            .data();
+    //  docu.data() as Map<String, dynamic>?;
+    return UserClass.fromJson(data ?? {});
+    // print(updater.value);
   }
 
   Future<void> fetchPlayersNames({String? uidMine, String? uidOpp}) async {
@@ -72,17 +87,17 @@ class TictactoeOnlineController extends GetxController {
 
   Future<void> initializeGame(String uidMine, String uidOppo) async {
     gameData.value = GameData(
-      currentPlayer: 'Nobody',
-      moves: List.filled(9, ''),
-      player1: uidMine.compareTo(uidOppo) <= 0 ? myName : opponentName,
-      player2: uidMine.compareTo(uidOppo) <= 0 ? opponentName : myName,
-      player1Uid: uidMine.compareTo(uidOppo) <= 0 ? uidMine : uidOppo,
-      player2Uid: uidMine.compareTo(uidOppo) <= 0 ? uidOppo : uidMine,
-      gameEnd: false,
-      gameStart: false,
-      startPlayer: null,
-      gameEndMassage: "",
-    );
+        currentPlayer: 'Nobody',
+        moves: List.filled(9, ''),
+        player1: uidMine.compareTo(uidOppo) <= 0 ? myName : opponentName,
+        player2: uidMine.compareTo(uidOppo) <= 0 ? opponentName : myName,
+        player1Uid: uidMine.compareTo(uidOppo) <= 0 ? uidMine : uidOppo,
+        player2Uid: uidMine.compareTo(uidOppo) <= 0 ? uidOppo : uidMine,
+        gameEnd: false,
+        gameStart: false,
+        startPlayer: null,
+        gameEndMassage: "",
+        winner: "");
 
     await FirebaseFirestore.instance
         .collection('ticTacToe')
@@ -141,8 +156,9 @@ class TictactoeOnlineController extends GetxController {
     if (draw) {
       gameData.value?.gameEndMassage = "Drawn";
       gameData.value?.gameEnd = true;
+      gameData.value?.winner = "Drawn";
+      updateStat();
       gamEndSet();
-      // showGameOverMessage();
     }
   }
 
@@ -166,12 +182,12 @@ class TictactoeOnlineController extends GetxController {
       if (playerPosition0.isNotEmpty) {
         if (playerPosition0 == playerPosition1 &&
             playerPosition0 == playerPosition2) {
-          // showGameOverMessage("${gameData.value?.currentPlayer} won");
           gameData.value?.gameEnd = true;
           gameData.value?.gameEndMassage =
               "${gameData.value?.currentPlayer} won";
+          gameData.value?.winner = gameData.value?.currentPlayer;
+          updateStat();
           gamEndSet();
-          // showGameOverMessage();
           return;
         }
       }
@@ -185,6 +201,27 @@ class TictactoeOnlineController extends GetxController {
         .set(
           gameData.value?.toJson() ?? {},
         );
+    await FirebaseFirestore.instance.collection('users').doc(myUid).set(
+          updater.value?.toJson() ?? {},
+        );
+    await FirebaseFirestore.instance.collection('users').doc(oppoUid).set(
+          oppUpdater.value?.toJson() ?? {},
+        );
+    // print(updater.value?.won);
+  }
+
+  void updateStat() {
+    updater.value?.played = (updater.value?.played ?? 0) + 1;
+    if (gameData.value?.winner == myName) {
+      updater.value?.won = (updater.value?.won ?? 0) + 1;
+    }
+  }
+
+  void oppState() {
+    oppUpdater.value?.played = (oppUpdater.value?.played ?? 0) + 1;
+    if (gameData.value?.winner == opponentName) {
+      oppUpdater.value?.won = (oppUpdater.value?.won ?? 0) + 1;
+    }
   }
 
   showGameOverMessage() {

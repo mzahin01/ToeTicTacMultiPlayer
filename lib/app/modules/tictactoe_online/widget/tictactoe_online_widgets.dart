@@ -73,8 +73,12 @@ class RestartButton extends StatelessWidget {
                           controller.gameData.value?.gameEnd = true;
                           controller.gameData.value?.gameEndMassage =
                               '${controller.myName} Surrendered';
+                          controller.gameData.value?.winner =
+                              controller.opponentName;
+                          // print(controller.gameData.value?.winner);
+                          controller.updateStat();
+                          controller.oppState();
                           controller.gamEndSet();
-                          print(controller.gameData.value?.gameEndMassage);
                           await Future.delayed(
                             const Duration(seconds: 4),
                           );
@@ -131,7 +135,7 @@ class HeaderText extends StatelessWidget {
         ),
         Obx(
           () {
-            print(controller.gameData.value?.gameEndMassage);
+            // print(controller.gameData.value?.gameEndMassage);
             return Text(
               controller.gameData.value?.gameEnd == true
                   ? controller.gameData.value?.gameEndMassage ?? ""

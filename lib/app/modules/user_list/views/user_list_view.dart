@@ -10,7 +10,7 @@ class UserListView extends GetView<UserListController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Who you wanna play with'),
+        title: const Text('Players List'),
         centerTitle: true,
       ),
       body: Obx(() {
@@ -38,11 +38,22 @@ class UserListView extends GetView<UserListController> {
               child: Container(
                 margin: const EdgeInsets.all(5),
                 color: const Color.fromARGB(255, 118, 208, 249),
-                height: Get.height / 13,
                 width: Get.width,
                 child: ListTile(
                   title: Text(user.name ?? '--'),
                   subtitle: Text(user.email ?? '--'),
+                  trailing: Container(
+                    color: Colors.white,
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text(
+                      (user.played ?? 0) <= 10
+                          ? 'NewBie'
+                          : user.played == 0
+                              ? '${user.won.toString()}%'
+                              : '${(user.won! * 100 / user.played!).toStringAsFixed(2)}%',
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ),
                 ),
               ),
               onTap: () {

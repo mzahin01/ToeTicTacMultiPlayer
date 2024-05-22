@@ -5,7 +5,6 @@ import 'package:ttt/app/modules/user_list/model/user.dart';
 
 class UserListController extends GetxController {
   RxList<OfflineUser> users = RxList.empty(growable: true);
-
   Rx<User?> user = Rx(null);
 
   @override
@@ -34,6 +33,8 @@ class UserListController extends GetxController {
           uid: doc.id,
           name: data['name'],
           email: data['email'],
+          played: data['played'],
+          won: data['won'],
         ));
       }
     });
