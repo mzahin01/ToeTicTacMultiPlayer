@@ -47,7 +47,6 @@ class TictactoeOnlineController extends GetxController {
             .data();
     //  docu.data() as Map<String, dynamic>?;
     return UserClass.fromJson(data ?? {});
-    // print(updater.value);
   }
 
   Future<void> fetchPlayersNames({String? uidMine, String? uidOpp}) async {
@@ -83,7 +82,7 @@ class TictactoeOnlineController extends GetxController {
         parseGameData(doc as DocumentSnapshot<Map<String, dynamic>>);
       }
     } catch (e) {
-      print('Error fetching/creating game document: $e');
+      // print('Error fetching/creating game document: $e');
     }
   }
 
@@ -155,7 +154,7 @@ class TictactoeOnlineController extends GetxController {
           .doc(concatenatedUids.value);
       gameRef.set(gameData.value?.toJson() ?? {});
     } catch (e) {
-      print('Error updating moves field: $e');
+      // print('Error updating moves field: $e');
     }
   }
 
