@@ -80,7 +80,7 @@ class RestartButton extends StatelessWidget {
                           controller.oppState();
                           controller.gamEndSet();
                           await Future.delayed(
-                            const Duration(seconds: 4),
+                            const Duration(seconds: 6),
                           );
                           controller.initializeGame(
                             controller.gameData.value?.player1Uid ?? '',

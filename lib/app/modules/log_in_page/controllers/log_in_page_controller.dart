@@ -4,10 +4,8 @@ import 'package:get/get.dart';
 import 'package:ttt/app/routes/app_pages.dart';
 
 class LogInPageController extends GetxController {
-  TextEditingController emailController =
-      TextEditingController(text: 'azraeel@gmail.com');
-  TextEditingController passController =
-      TextEditingController(text: 'openopen');
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passController = TextEditingController();
 
   void login() async {
     try {

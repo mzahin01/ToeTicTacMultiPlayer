@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ttt/app/modules/tictactoe_online/model/game_data.dart';
 
@@ -158,9 +157,15 @@ class TictactoeOnlineController extends GetxController {
     }
   }
 
-  void gameroutine() {
+  Future<void> gameroutine() async {
     if (gameData.value?.gameEnd == true) {
-      showGameOverMessage();
+      await Future.delayed(
+        const Duration(seconds: 6),
+      );
+      initializeGame(
+        gameData.value?.player1Uid ?? '',
+        gameData.value?.player2Uid ?? '',
+      );
     } else {
       _checkwinner();
       _checkForDraw();
@@ -232,7 +237,6 @@ class TictactoeOnlineController extends GetxController {
     await FirebaseFirestore.instance.collection('users').doc(oppoUid).set(
           oppUpdater.value?.toJson() ?? {},
         );
-    // print(updater.value?.won);
   }
 
   void updateStat() {
@@ -247,32 +251,5 @@ class TictactoeOnlineController extends GetxController {
     if (gameData.value?.winner == opponentName) {
       oppUpdater.value?.won = (oppUpdater.value?.won ?? 0) + 1;
     }
-  }
-
-  bool _isCooldown = false;
-
-  void showGameOverMessage() {
-    if (_isCooldown) {
-      return;
-    }
-    Get.snackbar(
-      "Game Over",
-      gameData.value?.gameEndMassage ?? "",
-      duration: const Duration(seconds: 3),
-      backgroundColor: Colors.blue,
-      colorText: Colors.white,
-      snackPosition: SnackPosition.TOP,
-      overlayColor: Colors.black.withOpacity(0.5),
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.all(30),
-    );
-    _startCooldown();
-  }
-
-  void _startCooldown() {
-    _isCooldown = true;
-    Future.delayed(const Duration(seconds: 5), () {
-      _isCooldown = false;
-    });
   }
 }
