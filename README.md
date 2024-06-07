@@ -1,6 +1,6 @@
 # TicTacToe
 
-A project build with Dream.
+A project built with Dream.
 
 ## Deployment Url
 
