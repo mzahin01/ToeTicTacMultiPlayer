@@ -92,7 +92,7 @@ class TictactoeOfflineController extends GetxController {
       backgroundColor: Colors.blue,
       colorText: Colors.white,
       snackPosition: SnackPosition.TOP,
-      overlayColor: Colors.black.withOpacity(0.5),
+      overlayColor: Colors.black.withAlpha(125),
       padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.all(30),
     );

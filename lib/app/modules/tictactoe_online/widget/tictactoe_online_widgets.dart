@@ -14,7 +14,7 @@ class FirstPlayerButton extends StatelessWidget {
     return Obx(() {
       return ElevatedButton(
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(
+          backgroundColor: WidgetStateProperty.all<Color>(
               controller.gameData.value?.currentPlayer == 'Nobody'
                   ? Colors.white
                   : Colors.black),
